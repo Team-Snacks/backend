@@ -33,17 +33,15 @@ public class ResponseService {
     }
 
     //오류를 반환할때
-    public CommonResponse errorResponse(int status, String log)
+    public CommonResponse errorResponse(String log)
     {
         CommonResponse errorResponse = new CommonResponse();
-        errorResponse.status = status;
         errorResponse.log = log;
 
         return (errorResponse);
     }
     //CommonResponse의 값을 성공으로 변환
     void setSuccessResponse(CommonResponse response) {
-        response.status = 200;
         response.log = "OK";
     }
 }
