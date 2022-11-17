@@ -1,5 +1,6 @@
 package com.snacks.demo.dto;
 
+import com.snacks.demo.response.ResponseMessage;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -12,10 +13,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-  @NotBlank(message = "이메일은 필수 입력 값입니다.")
-  @Email(message = "올바른 이메일 형식이 아닙니다.")
+  @NotBlank(message = ResponseMessage.EMAIL_NULL)
+  @Email(message = ResponseMessage.EMAIL_FORMAT_ERROR)
   private String email;
 
-  @NotBlank(message = "비밀번호 값은 필수 입력 값입니다.")
+  @NotBlank(message = ResponseMessage.PASSWORD_NULL)
   private String password;
 }

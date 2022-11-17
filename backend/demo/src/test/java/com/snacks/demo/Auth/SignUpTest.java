@@ -21,7 +21,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -112,13 +114,13 @@ public class SignUpTest {
     UserDto userDto = new UserDto(email, password);
 
     //when
-
+    ResponseEntity responseEntity = authService.signUp(userDto);
     //then
     if (expected == true) {
-      assertThat(authService.signUp(userDto).status).isEqualTo(200);
+      assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
     else {
-      assertThat(authService.signUp(userDto).status).isEqualTo(409);
+      assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
   }
 
@@ -139,7 +141,7 @@ public class SignUpTest {
         .content(user);
 
     mockMvc.perform(requestBuilder)
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.status().isCreated())
         .andDo(MockMvcResultHandlers.print())
         .andReturn()
         .getResponse();
