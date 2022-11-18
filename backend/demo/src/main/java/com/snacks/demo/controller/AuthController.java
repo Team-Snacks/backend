@@ -26,12 +26,23 @@ public class AuthController {
   @Autowired
   PasswordEncoder passwordEncoder;
 
-  @PostMapping(" ")
-  public ResponseEntity signUp(@Validated @RequestBody UserDto userDto, BindingResult bindingResult) {
+  @PostMapping("")
+  public ResponseEntity signUp(@Validated @RequestBody UserDto userDto,
+      BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
-      return ResponseEntity.badRequest().body(responseService.errorResponse(bindingResult.getFieldError().getDefaultMessage()));
+      return ResponseEntity.badRequest()
+          .body(responseService.errorResponse(bindingResult.getFieldError().getDefaultMessage()));
     }
     return authService.signUp(userDto);
   }
 
+  @PostMapping("/login")
+  public ResponseEntity login(@Validated @RequestBody UserDto userDto,
+      BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      return ResponseEntity.badRequest()
+          .body(responseService.errorResponse(bindingResult.getFieldError().getDefaultMessage()));
+    }
+    return authService.login(userDto);
+  }
 }

@@ -2,8 +2,6 @@ package com.snacks.demo.response;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ResponseService {
     //반환할 데이터가 없을 때

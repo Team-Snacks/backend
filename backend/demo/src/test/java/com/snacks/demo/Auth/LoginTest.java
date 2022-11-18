@@ -33,19 +33,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class SignUpTest {
-
-  private static ValidatorFactory factory;
-  private static Validator validator;
+public class LoginTest {
 
   @Autowired
-  private MockMvc mockMvc;
+  AuthService authService;
 
   @Autowired
   private ObjectMapper objectMapper;
 
   @Autowired
-  private AuthService authService;
+  private MockMvc mockMvc;
+
+  private static ValidatorFactory factory;
+  private static Validator validator;
 
   @BeforeAll
   public static void init() {
@@ -59,9 +59,9 @@ public class SignUpTest {
   }
 
   // 테스트 케이스
-  static Stream<Arguments> signUpProvider() throws Throwable {
+  static Stream<Arguments> loginProvider() throws Throwable {
     return Stream.of(
-        Arguments.arguments(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD, "정상 테스트", true),
+        Arguments.arguments(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD, "정상 케이스", true),
         Arguments.arguments("", "1234", "empty 이메일", false),
         Arguments.arguments(null, "1234", "null 이메일", false),
         Arguments.arguments("test@test.com", "", "empty 비밀번호", false),
@@ -74,17 +74,17 @@ public class SignUpTest {
     );
   }
 
-  static Stream<Arguments> signUpServiceProvider() throws Throwable {
+  static Stream<Arguments> loginServiceProvider() throws Throwable {
     return Stream.of(
-        Arguments.arguments(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD, "회원가입 성공", true),
-        Arguments.arguments(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD, "이메일 중복, 회원가입 실패", false)
+        Arguments.arguments(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD, "로그인 성공", true),
+        Arguments.arguments(ConstantTest.VALID_EMAIL, "0000", "비밀번호 다름", false),
+        Arguments.arguments("fake@test.com", "1234", "없는 이메일", false)
     );
   }
 
-  // validation 테스트
   @ParameterizedTest(name = "{index} - {3} - {2}")
-  @DisplayName("signUp validation 테스트")
-  @MethodSource("signUpProvider")
+  @DisplayName("login validation 테스트")
+  @MethodSource("loginProvider")
   void signUpValidation(String email, String password, String message, boolean expected) {
     //given
     UserDto userDto = new UserDto(email, password);
@@ -103,43 +103,44 @@ public class SignUpTest {
     }
   }
 
-
   // service 테스트
   @ParameterizedTest(name = "{index} - {3} - {2}")
-  @DisplayName("signUp Service 테스트")
-  @MethodSource("signUpServiceProvider")
-  void signUpService(String email, String password, String message, boolean expected) {
+  @DisplayName("login Service 테스트")
+  @MethodSource("loginServiceProvider")
+  void loginService(String email, String password, String message, boolean expected) {
     //given
     UserDto userDto = new UserDto(email, password);
 
     //when
-    ResponseEntity responseEntity = authService.signUp(userDto);
+    ResponseEntity responseEntity = authService.login(userDto);
+
     //then
     if (expected == true) {
-      assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+      assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     } else {
-      assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+      assertThat(responseEntity.getStatusCode()).isNotEqualTo(HttpStatus.OK);
     }
   }
-
 
   // controller 테스트
   @DisplayName("POST /auth 테스트")
   @Test
-  void signupController() throws Exception {
+  void loginController() throws Exception {
     //given
-    String user = objectMapper.writeValueAsString(new UserDto("signup@email.com", "1234"));
+    authService.signUp(new UserDto(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD));
+    String user = objectMapper.writeValueAsString(
+        new UserDto(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD));
 
     //when
 
     //then
-    RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/auth")
+    RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/auth/login")
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(user);
 
     mockMvc.perform(requestBuilder)
-        .andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(MockMvcResultHandlers.print())
         .andReturn()
         .getResponse();
