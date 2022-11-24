@@ -46,6 +46,7 @@ public class AuthService {
 
   public ResponseEntity login(UserDto userDto) {
     //login
+    System.out.println("====login Service");
     Optional<User> existedUser = authRepository.findByEmail(userDto.getEmail());
     if (!existedUser.isPresent()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
