@@ -3,6 +3,7 @@ package com.snacks.demo.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snacks.demo.config.EnvConfiguration;
 import com.snacks.demo.dto.UserDto;
 import com.snacks.demo.jwt.auth.CustomUserDetails;
 import com.snacks.demo.response.ResponseService;
@@ -12,22 +13,22 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 //@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
 
+  @Autowired
+  EnvConfiguration env;
   public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
     this.authenticationManager = authenticationManager;
     setFilterProcessesUrl("/auth/login");
@@ -76,11 +77,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     String jwtToken = JWT.create()
         .withSubject(customUserDetails.getUsername())
-        .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
+        .withExpiresAt(new Date(System.currentTimeMillis() + Integer.parseInt(env.getProperty("expiration_time"))))
         .withClaim("email", customUserDetails.getUsername())
-        .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        .sign(Algorithm.HMAC512(env.getProperty("secret")));
 
-    response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+    response.addHeader(env.getProperty("header_string"), env.getProperty("token_prefix") + jwtToken);
 
     ResponseService responseService = new ResponseService();
     ObjectMapper mapper = new ObjectMapper();
