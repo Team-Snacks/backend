@@ -43,6 +43,7 @@ public class AuthController {
       return ResponseEntity.badRequest()
           .body(responseService.errorResponse(bindingResult.getFieldError().getDefaultMessage()));
     }
+//    System.out.println("===login Controller");
     return authService.login(userDto);
   }
 }
