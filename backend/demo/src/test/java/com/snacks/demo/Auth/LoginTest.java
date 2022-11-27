@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snacks.demo.ConstantTest;
 import com.snacks.demo.dto.UserDto;
+import com.snacks.demo.entity.User;
+import com.snacks.demo.jwt.JwtAuthenticationFilter;
+import com.snacks.demo.repository.AuthRepository;
 import com.snacks.demo.service.AuthService;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -25,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -144,6 +148,30 @@ public class LoginTest {
         .andDo(MockMvcResultHandlers.print())
         .andReturn()
         .getResponse();
+  }
+
+  @DisplayName("토큰 발급 테스트")
+  @Test
+  void create_token_test() throws Exception {
+    //given
+    authService.signUp(new UserDto(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD));
+    String user = objectMapper.writeValueAsString(
+        new UserDto(ConstantTest.VALID_EMAIL, ConstantTest.VALID_PASSWORD));
+
+    //when
+
+    //then
+    RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/auth/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .content(user);
+
+    mockMvc.perform(requestBuilder)
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(MockMvcResultHandlers.print())
+        .andReturn()
+        .getResponse();
+
   }
 
 }
