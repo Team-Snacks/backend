@@ -1,7 +1,5 @@
 package com.snacks.demo.config;
 
-import com.snacks.demo.jwt.CustomFilter;
-import com.snacks.demo.jwt.CustomFilter2;
 import com.snacks.demo.jwt.JwtAuthenticationFilter;
 import com.snacks.demo.jwt.JwtAuthorizationFilter;
 import com.snacks.demo.repository.AuthRepository;
@@ -14,10 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 @Configuration
-//@EnableWebSecurity(debug = true)
 @EnableWebSecurity()
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -37,13 +33,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .addFilter(corsConfig.corsFilter())
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository))
-        //.addFilterAfter(new CustomFilter(), JwtAuthorizationFilter.class)
-        //.addFilterAfter(new CustomFilter2(), FilterSecurityInterceptor.class)
         .authorizeRequests()
         .antMatchers("/users/**").authenticated()
-        //.antMatchers("/auth/**").permitAll()
         .anyRequest().permitAll().and();
-    //.anyRequest().authenticated().and();
 
   }
 

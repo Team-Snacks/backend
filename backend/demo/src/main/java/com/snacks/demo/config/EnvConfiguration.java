@@ -1,6 +1,5 @@
 package com.snacks.demo.config;
 
-import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
