@@ -36,14 +36,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain) throws IOException, ServletException {
 
-//    System.out.println("doFilterInternal");
     String header = request.getHeader(env.getProperty("header_string"));
     if (header == null || !header.startsWith(env.getProperty("token_prefix"))) {
       chain.doFilter(request, response);
-//      System.out.println("@ hello" + request.getPathInfo());
       return;
     }
-//    System.out.println("Header" + header);
     String token = request.getHeader(env.getProperty("header_string"))
         .replace(env.getProperty("token_prefix"), "");
 
@@ -56,7 +53,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
       }
 
-//      System.out.println("user" + user.get().getEmail());
       CustomUserDetails customUserDetails = new CustomUserDetails(user.get());
       Authentication authentication =
           new UsernamePasswordAuthenticationToken(
@@ -67,7 +63,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       SecurityContextHolder.getContext().setAuthentication(authentication);
 
     }
-//    System.out.println("doFilterInternal fin");
     chain.doFilter(request, response);
   }
 }
