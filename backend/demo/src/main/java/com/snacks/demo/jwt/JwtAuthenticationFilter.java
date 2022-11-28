@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snacks.demo.config.EnvConfiguration;
 import com.snacks.demo.dto.UserDto;
 import com.snacks.demo.jwt.auth.CustomUserDetails;
+import com.snacks.demo.redis.RedisService;
 import com.snacks.demo.response.ResponseService;
 import java.io.IOException;
 import java.util.Date;
@@ -26,10 +27,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   private final AuthenticationManager authenticationManager;
 
+  private final RedisService redisService;
+
   @Autowired
   EnvConfiguration env;
-  public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+
+  public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
+      RedisService redisService) {
     this.authenticationManager = authenticationManager;
+    this.redisService = redisService;
     setFilterProcessesUrl("/auth/login");
   }
 
@@ -73,18 +79,31 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
 
-    String jwtToken = JWT.create()
+    String refreshToken = JWT.create()
         .withSubject(customUserDetails.getUsername())
-        .withExpiresAt(new Date(System.currentTimeMillis() + Integer.parseInt(env.getProperty("expiration_time"))))
+        .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
+            env.getProperty("refresh_token_validation_second"))))
         .withClaim("email", customUserDetails.getUsername())
         .sign(Algorithm.HMAC512(env.getProperty("secret")));
 
-    response.addHeader(env.getProperty("header_string"), env.getProperty("token_prefix") + jwtToken);
+    String accessToken = JWT.create()
+        .withSubject(customUserDetails.getUsername())
+        .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
+            env.getProperty("access_token_validation_second"))))
+        .withClaim("email", customUserDetails.getUsername())
+        .sign(Algorithm.HMAC512(env.getProperty("secret")));
+
+    redisService.setValues(customUserDetails.getUsername(), refreshToken);
+
+    response.addHeader(env.getProperty("header_string"),
+        env.getProperty("token_prefix") + accessToken);
 
     ResponseService responseService = new ResponseService();
     ObjectMapper mapper = new ObjectMapper();
     try {
-      mapper.writeValue(response.getWriter(), responseService.getCommonResponse());
+      mapper.writeValue(response.getWriter(),
+          responseService.getTokenResponse(env.getProperty("token_prefix") + refreshToken,
+              env.getProperty("token_prefix") + accessToken));
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }

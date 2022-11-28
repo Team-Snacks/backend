@@ -44,19 +44,4 @@ public class AuthService {
         body(responseService.getCommonResponse());
   }
 
-  public ResponseEntity login(UserDto userDto) {
-    //login
-    System.out.println("====login Service");
-    Optional<User> existedUser = authRepository.findByEmail(userDto.getEmail());
-    if (!existedUser.isPresent()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(responseService.errorResponse(ConstantResponse.EMAIL_NOT_FOUND));
-    }
-    if (!passwordEncoder.matches(userDto.getPassword(), existedUser.get().getPassword())) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(responseService.errorResponse(ConstantResponse.PASSWORD_NOT_MATCH));
-    }
-    return ResponseEntity.status(HttpStatus.OK).
-        body(responseService.getCommonResponse());
-  }
 }
