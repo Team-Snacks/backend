@@ -12,12 +12,12 @@ public class RedisService {
 
   private final RedisTemplate redisTemplate;
 
-  public void setValues(String email, String token){
+  public void setValues(String email, String token) {
     ValueOperations<String, String> values = redisTemplate.opsForValue();
-    values.set(email, token, Duration.ofMinutes(1)); //1분 뒤 삭제
+    values.set(email, token, Duration.ofMinutes(21600)); //15일 뒤 삭제
   }
 
-  public String getValues(String email){
+  public String getValues(String email) {
     ValueOperations<String, String> values = redisTemplate.opsForValue();
     return values.get(email);
   }

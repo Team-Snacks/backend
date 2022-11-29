@@ -79,6 +79,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
 
+    //토큰 만들때 유저 이메일을 그대로 넣어도 되는지? uuid값을 넣어줘야 하는 것은 아닌지
+
     /*String jwtToken = JWT.create()
         .withSubject(customUserDetails.getUsername())
         .withExpiresAt(new Date(System.currentTimeMillis() + Integer.parseInt(env.getProperty("expiration_time"))))
@@ -101,17 +103,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     redisService.setValues(customUserDetails.getUsername(), refreshToken);
 
-    //response.addHeader(env.getProperty("header_string"), env.getProperty("token_prefix") + jwtToken);
-    //헤더에는 access token만, body에 둘다 등록 하기
-    response.addHeader(env.getProperty("access_token"),
+    response.addHeader(env.getProperty("header_string"),
         env.getProperty("token_prefix") + accessToken);
-    response.addHeader(env.getProperty("refresh_token"),
-        env.getProperty("token_prefix") + refreshToken);
 
     ResponseService responseService = new ResponseService();
     ObjectMapper mapper = new ObjectMapper();
     try {
-      mapper.writeValue(response.getWriter(), responseService.getCommonResponse());
+      mapper.writeValue(response.getWriter(),
+          responseService.getTokenResponse(env.getProperty("token_prefix") + refreshToken,
+              env.getProperty("token_prefix") + accessToken));
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }

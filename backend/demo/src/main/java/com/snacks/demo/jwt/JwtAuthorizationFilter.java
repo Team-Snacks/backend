@@ -48,13 +48,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     //로그인, 리프레시 요청이라면 토큰 검사 안함
     if (servletPath.equals("/auth/login") || servletPath.equals("/auth/refresh")
         || servletPath.equals("/auth")) {
-      chain.doFilter(request, response); //return 안해도 되나?
+      chain.doFilter(request, response);
     }
 
     //토큰 값이 없거나 정상적이지 않으면?
     else if (header == null || !header.startsWith(env.getProperty("token_prefix"))) {
-      //chain.doFilter(request, response);
-      //return;
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
       response.setCharacterEncoding("UTF-8");
@@ -87,13 +85,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
 
-        /*
-        if (JWT.require(Algorithm.HMAC512(env.getProperty("secret"))).build().verify(token)
-            .getExpiresAt().before(new Date())) {
-          chain.doFilter(request, response);
-          System.out.println("토큰 만료");
-          return; //일단 토큰이 만료되면 오류나도록 함. 이후 토큰 재발급 api 구현 예정
-        }*/
 
         /*
 
