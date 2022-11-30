@@ -86,27 +86,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
 
 
-        /*
-
-        String email = JWT.require(Algorithm.HMAC512(env.getProperty("secret"))).build()
-            .verify(token)
-            .getClaim("email").asString();
-
-        if (email != null) {
-          Optional<User> user = authRepository.findByEmail(email);
-          if (user.isEmpty()) {
-            chain.doFilter(request, response);
-          }
-
-          CustomUserDetails customUserDetails = new CustomUserDetails(user.get());
-          Authentication authentication =
-              new UsernamePasswordAuthenticationToken(
-                  customUserDetails,
-                  null,
-                  customUserDetails.getAuthorities());
-
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-*/
       } catch (TokenExpiredException expiredException) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

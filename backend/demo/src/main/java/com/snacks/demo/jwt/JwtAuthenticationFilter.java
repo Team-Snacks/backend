@@ -79,14 +79,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
 
-    //토큰 만들때 유저 이메일을 그대로 넣어도 되는지? uuid값을 넣어줘야 하는 것은 아닌지
-
-    /*String jwtToken = JWT.create()
-        .withSubject(customUserDetails.getUsername())
-        .withExpiresAt(new Date(System.currentTimeMillis() + Integer.parseInt(env.getProperty("expiration_time"))))
-        .withClaim("email", customUserDetails.getUsername())
-        .sign(Algorithm.HMAC512(env.getProperty("secret")));*/
-
     String refreshToken = JWT.create()
         .withSubject(customUserDetails.getUsername())
         .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
