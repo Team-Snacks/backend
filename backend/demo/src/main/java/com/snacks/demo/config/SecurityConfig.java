@@ -2,6 +2,7 @@ package com.snacks.demo.config;
 
 import com.snacks.demo.jwt.JwtAuthenticationFilter;
 import com.snacks.demo.jwt.JwtAuthorizationFilter;
+import com.snacks.demo.redis.RedisService;
 import com.snacks.demo.repository.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   private AuthRepository authRepository;
 
+  @Autowired
+  private RedisService redisService;
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     HttpSecurity httpSecurity = http.csrf().disable()
@@ -31,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .addFilter(corsConfig.corsFilter())
-        .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+        .addFilter(new JwtAuthenticationFilter(authenticationManager(), redisService))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository))
         .authorizeRequests()
         .antMatchers("/users/**").authenticated()
