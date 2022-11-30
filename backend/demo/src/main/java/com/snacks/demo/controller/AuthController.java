@@ -57,16 +57,6 @@ public class AuthController {
     return authService.signUp(userDto);
   }
 
-  @PostMapping("/login")
-  public ResponseEntity login(@Validated @RequestBody UserDto userDto,
-      BindingResult bindingResult) {
-    if (bindingResult.hasErrors()) {
-      return ResponseEntity.badRequest()
-          .body(responseService.errorResponse(bindingResult.getFieldError().getDefaultMessage()));
-    }
-//    System.out.println("===login Controller");
-    return authService.login(userDto);
-  }
 
   @GetMapping("/refresh")
   public ResponseEntity refresh(HttpServletRequest request, HttpServletResponse response) {
