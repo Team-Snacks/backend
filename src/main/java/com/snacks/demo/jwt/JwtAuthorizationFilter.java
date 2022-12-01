@@ -43,7 +43,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       FilterChain chain) throws IOException, ServletException {
 
     String servletPath = request.getServletPath();
-    String header = request.getHeader(env.getProperty("header_string"));
+    String header = request.getHeader("Authorization");
 
     //로그인, 리프레시 요청이라면 토큰 검사 안함
     if (servletPath.equals("/auth/login") || servletPath.equals("/auth/refresh")
@@ -52,7 +52,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     //토큰 값이 없거나 정상적이지 않으면?
-    else if (header == null || !header.startsWith(env.getProperty("token_prefix"))) {
+    else if (header == null || !header.startsWith("Bearer ")) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
       response.setCharacterEncoding("UTF-8");
@@ -66,11 +66,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       }
     } else {
       try {
-        String token = request.getHeader(env.getProperty("header_string"))
-            .replace(env.getProperty("token_prefix"), "");
+        String token = request.getHeader("Authorization")
+            .replace("Bearer ", "");
 
         //access token 검증
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("secret"))).build();
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("SECRET_SALT"))).build();
         DecodedJWT decodedJWT = jwtVerifier.verify(token);
 
         //authetication 객체 생성

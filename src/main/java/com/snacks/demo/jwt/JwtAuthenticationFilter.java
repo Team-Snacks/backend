@@ -82,28 +82,28 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     String refreshToken = JWT.create()
         .withSubject(customUserDetails.getUsername())
         .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
-            env.getProperty("refresh_token_validation_second"))))
+            env.getProperty("REFRESH_EXPR"))))
         .withClaim("email", customUserDetails.getUsername())
-        .sign(Algorithm.HMAC512(env.getProperty("secret")));
+        .sign(Algorithm.HMAC512(env.getProperty("SECRET_SALT")));
 
     String accessToken = JWT.create()
         .withSubject(customUserDetails.getUsername())
         .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
-            env.getProperty("access_token_validation_second"))))
+            env.getProperty("ACCESS_EXPR"))))
         .withClaim("email", customUserDetails.getUsername())
-        .sign(Algorithm.HMAC512(env.getProperty("secret")));
+        .sign(Algorithm.HMAC512(env.getProperty("SECRET_SALT")));
 
     redisService.setValues(customUserDetails.getUsername(), refreshToken);
 
-    response.addHeader(env.getProperty("header_string"),
-        env.getProperty("token_prefix") + accessToken);
+    response.addHeader("Authorization",
+        "Bearer " + accessToken);
 
     ResponseService responseService = new ResponseService();
     ObjectMapper mapper = new ObjectMapper();
     try {
       mapper.writeValue(response.getWriter(),
-          responseService.getTokenResponse(env.getProperty("token_prefix") + refreshToken,
-              env.getProperty("token_prefix") + accessToken));
+          responseService.getTokenResponse("Bearer " + refreshToken,
+              "Bearer " + accessToken));
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
