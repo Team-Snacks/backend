@@ -1,5 +1,6 @@
+.DS_Store
 HELP.md
-backend/demo/.gradle
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
