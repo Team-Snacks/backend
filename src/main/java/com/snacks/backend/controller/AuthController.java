@@ -6,8 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.snacks.backend.config.EnvConfiguration;
+import com.snacks.backend.dto.AuthRequest;
 import com.snacks.backend.dto.UserDto;
 import com.snacks.backend.jwt.auth.CustomUserDetails;
+import com.snacks.backend.oauth.GoogleAuthService;
 import com.snacks.backend.redis.RedisService;
 import com.snacks.backend.response.ConstantResponse;
 import com.snacks.backend.response.ResponseService;
@@ -46,6 +48,9 @@ public class AuthController {
 
   @Autowired
   RedisService redisService;
+
+  @Autowired
+  GoogleAuthService googleAuthService;
 
   @PostMapping("")
   public ResponseEntity signUp(@Validated @RequestBody UserDto userDto,
@@ -98,5 +103,10 @@ public class AuthController {
           .body(responseService.errorResponse("refresh 토큰이 만료 되었습니다. 다시 로그인하세요"));
 
     }
+  }
+
+  @PostMapping("/google")
+  public ResponseEntity google(@RequestBody AuthRequest authRequest){
+    return googleAuthService.login(authRequest);
   }
 }
