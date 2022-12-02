@@ -20,4 +20,5 @@ public class UserDto {
 
   @NotBlank(message = ConstantResponse.PASSWORD_NULL)
   private String password;
+
 }

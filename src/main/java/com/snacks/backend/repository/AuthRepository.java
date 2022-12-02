@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface AuthRepository extends JpaRepository<User, Long> {
   Optional<User> findByEmail(String email);
 
+  //oauth 추가
+  Optional<User> findByEmailAndProvider(String email, String provider);
   User save(User user);
 
 }
