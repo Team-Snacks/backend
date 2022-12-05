@@ -82,20 +82,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
 
-    /*String refreshToken = JWT.create()
-        .withSubject(customUserDetails.getUsername())
-        .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
-            env.getProperty("REFRESH_EXPR"))))
-        .withClaim("email", customUserDetails.getUsername())
-        .sign(Algorithm.HMAC512(env.getProperty("SECRET_SALT")));
-
-    String accessToken = JWT.create()
-        .withSubject(customUserDetails.getUsername())
-        .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
-            env.getProperty("ACCESS_EXPR"))))
-        .withClaim("email", customUserDetails.getUsername())
-        .sign(Algorithm.HMAC512(env.getProperty("SECRET_SALT")));
-*/
     String refreshToken = jwtProvider.createToken(customUserDetails.getUsername(), "refresh");
     String accessToken = jwtProvider.createToken(customUserDetails.getUsername(), "access");
 

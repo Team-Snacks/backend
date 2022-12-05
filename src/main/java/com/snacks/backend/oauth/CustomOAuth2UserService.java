@@ -49,15 +49,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
     OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-//    System.out.println(registrationId);
-//    for (Entry<String, Object> x:
-//    oAuth2User.getAttributes().entrySet()) {
-//      System.out.println("@ " + x);
-//    }
 
     User user = saveOrUpdate(attributes);
-//    httpSession.setAttribute("user", new SessionUser(user));
-
 
     /*
     String refreshToken = jwtProvider.createToken(attributes.getEmail(), "refresh");
@@ -79,13 +72,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }*/
-
     return new DefaultOAuth2User(
         Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
         attributes.getAttributes(),
         attributes.getNameAttributeKey()
     );
   }
+
 
   private User saveOrUpdate(OAuthAttributes attributes){
     User user = authRepository.findByEmail(attributes.getEmail())
