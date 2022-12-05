@@ -40,3 +40,4 @@ out/
 # env
 application.properties
 env.properties
+application-oauth.properties
