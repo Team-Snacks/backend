@@ -36,9 +36,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   EnvConfiguration env;
 
   public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
-      RedisService redisService) {
+      RedisService redisService, JwtProvider jwtProvider) {
     this.authenticationManager = authenticationManager;
     this.redisService = redisService;
+    this.jwtProvider = jwtProvider;
     setFilterProcessesUrl("/auth/login");
   }
 
