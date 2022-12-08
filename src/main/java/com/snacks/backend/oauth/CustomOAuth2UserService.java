@@ -52,26 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     User user = saveOrUpdate(attributes);
 
-    /*
-    String refreshToken = jwtProvider.createToken(attributes.getEmail(), "refresh");
-    String accessToken = jwtProvider.createToken(attributes.getEmail(), "access");
 
-    redisService.setValues(attributes.getEmail(), refreshToken);
-
-    //헤더에 값은 어떻게 넣어주지.....
-    //반환은 어떻게 해주지....
-    //response.addHeader("Authorization",
-    //    "Bearer " + accessToken);
-
-    ResponseService responseService = new ResponseService();
-    ObjectMapper mapper = new ObjectMapper();
-    /*try {
-      mapper.writeValue(response.getWriter(),
-          responseService.getTokenResponse("Bearer " + refreshToken,
-              "Bearer " + accessToken));
-    } catch (IOException ex) {
-      throw new RuntimeException(ex);
-    }*/
     return new DefaultOAuth2User(
         Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
         attributes.getAttributes(),
