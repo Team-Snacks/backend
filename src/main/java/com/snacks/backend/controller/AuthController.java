@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.snacks.backend.config.EnvConfiguration;
 import com.snacks.backend.dto.UserDto;
+import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.redis.RedisService;
 import com.snacks.backend.response.ResponseService;
 import com.snacks.backend.service.AuthService;
@@ -44,6 +45,9 @@ public class AuthController {
   @Autowired
   RedisService redisService;
 
+  @Autowired
+  JwtProvider jwtProvider;
+
   @PostMapping("")
   public ResponseEntity signUp(@Validated @RequestBody UserDto userDto,
       BindingResult bindingResult) {
@@ -68,23 +72,14 @@ public class AuthController {
       String refreshtoken = request.getHeader(env.getProperty("header_string"))
           .replace(env.getProperty("token_prefix"), "");
 
-      JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("secret"))).build();
-      DecodedJWT decodedJWT = jwtVerifier.verify(refreshtoken);
-      String email = decodedJWT.getSubject();
-
-      //프론트에서 받아온 refresh 토큰과 redis에 있는 refresh 토큰 비교
-      if (!refreshtoken.equals(redisService.getValues(email))) {
+      if (jwtProvider.verifyToken(refreshtoken) == false) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(responseService.errorResponse("잘못된 JWT 토큰입니다."));
-
       }
 
-      String accessToken = JWT.create()
-          .withSubject(email)
-          .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(
-              env.getProperty("access_token_validation_second"))))
-          .withClaim("email", email)
-          .sign(Algorithm.HMAC512(env.getProperty("secret")));
+
+
+      String accessToken = jwtProvider.createToken(jwtProvider.getEmail(refreshtoken), "access");
 
       response.addHeader(env.getProperty("access_token"),
           env.getProperty("token_prefix") + accessToken);
