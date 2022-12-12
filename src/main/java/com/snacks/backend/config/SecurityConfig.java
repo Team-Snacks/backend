@@ -2,6 +2,7 @@ package com.snacks.backend.config;
 
 import com.snacks.backend.jwt.JwtAuthenticationFilter;
 import com.snacks.backend.jwt.JwtAuthorizationFilter;
+import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.oauth.CustomOAuth2UserService;
 import com.snacks.backend.oauth.OAuth2SuccessHandler;
 import com.snacks.backend.redis.RedisService;
@@ -30,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private RedisService redisService;
 
   @Autowired
+  private JwtProvider jwtProvider;
+
+  @Autowired
   private CustomOAuth2UserService customOAuth2UserService;
 
   @Autowired
@@ -40,12 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     HttpSecurity httpSecurity = http.csrf().disable()
         .httpBasic().disable()
         .formLogin().disable()
-        //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
         .and()
         .addFilter(corsConfig.corsFilter())
-        .addFilter(new JwtAuthenticationFilter(authenticationManager(), redisService))
+        .addFilter(new JwtAuthenticationFilter(authenticationManager(), redisService, jwtProvider))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository))
         .authorizeRequests()
         .antMatchers("/users/**").authenticated()
