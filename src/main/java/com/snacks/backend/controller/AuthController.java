@@ -86,7 +86,7 @@ public class AuthController {
       String provider = jwtProvider.getProvider(refreshtoken);
       String email = jwtProvider.getEmail(refreshtoken);
 
-      if (provider == "local") {
+      if (provider.equals("local")) {
         Optional<User> user = authRepository.findByEmailAndProvider(email, "local");
         Long id = user.get().getId();
         String value = redisService.getValues(id.toString());
