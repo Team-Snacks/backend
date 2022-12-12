@@ -25,8 +25,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
     String email = defaultOAuth2User.getAttributes().get("email").toString();
 
-    String refreshToken = jwtProvider.createToken(email, "refresh");
-    String accessToken = jwtProvider.createToken(email, "access");
+    String refreshToken = jwtProvider.createToken(email, "refresh", "google");
+    String accessToken = jwtProvider.createToken(email, "access", "google");
 
     redisService.setValues(authentication.getName(), refreshToken);
 

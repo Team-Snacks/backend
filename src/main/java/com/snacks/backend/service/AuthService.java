@@ -1,5 +1,6 @@
 package com.snacks.backend.service;
 
+import com.snacks.backend.dto.Role;
 import com.snacks.backend.dto.UserDto;
 import com.snacks.backend.entity.User;
 import com.snacks.backend.repository.AuthRepository;
@@ -32,8 +33,10 @@ public class AuthService {
     User user = new User();
     user.setEmail(userDto.getEmail());
     user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    user.setRole(Role.USER);
+    user.setProvider("local");
 
-    Optional<User> existedUser = authRepository.findByEmail(user.getEmail());
+    Optional<User> existedUser = authRepository.findByEmailAndProvider(user.getEmail(), "local");
 
     if (existedUser.isPresent()) {
       return ResponseEntity.status(HttpStatus.CONFLICT)

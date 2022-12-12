@@ -20,7 +20,7 @@ public class JwtProvider {
   @Autowired
   RedisService redisService;
 
-  public String createToken(String subject, String type)
+  public String createToken(String subject, String type, String provider)
   {
     String expr;
     if (type == "refresh")
@@ -32,6 +32,7 @@ public class JwtProvider {
         .withSubject(subject)
         .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expr)))
         .withClaim("email", subject)
+         .withClaim("provider", provider)
         .sign(Algorithm.HMAC512(env.getProperty("SECRET_SALT")));
   }
 
@@ -49,7 +50,7 @@ public class JwtProvider {
 
   public DecodedJWT getdecodedJwt(String token)
   {
-    JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("secret"))).build();
+    JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("SECRET_SALT"))).build();
     return jwtVerifier.verify(token);
 
   }
@@ -57,5 +58,11 @@ public class JwtProvider {
   {
     DecodedJWT decodedJWT = getdecodedJwt(token);
     return decodedJWT.getSubject();
+  }
+
+  public String getProvider(String token)
+  {
+    DecodedJWT decodedJWT = getdecodedJwt(token);
+    return decodedJWT.getClaim("provider").asString();
   }
 }

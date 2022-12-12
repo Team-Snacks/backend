@@ -30,12 +30,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   private AuthRepository authRepository;
 
   @Autowired
+  JwtProvider jwtProvider;
+  @Autowired
   EnvConfiguration env;
 
   public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
-      AuthRepository authRepository) {
+      AuthRepository authRepository, JwtProvider jwtProvider) {
     super(authenticationManager);
     this.authRepository = authRepository;
+    this.jwtProvider = jwtProvider;
   }
 
   @Override
@@ -68,13 +71,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       try {
         String token = request.getHeader("Authorization")
             .replace("Bearer ", "");
+        System.out.println("token " + token);
 
         //access token 검증
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("SECRET_SALT"))).build();
-        DecodedJWT decodedJWT = jwtVerifier.verify(token);
+        //JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("SECRET_SALT"))).build();
+        //DecodedJWT decodedJWT = jwtVerifier.verify(token);
+        DecodedJWT decodedJWT = jwtProvider.getdecodedJwt(token);
 
         //authetication 객체 생성
-        String email = decodedJWT.getSubject();
+        String email = jwtProvider.getEmail(token);
         Optional<User> user = authRepository.findByEmail(email);
         CustomUserDetails customUserDetails = new CustomUserDetails(user.get());
         Authentication authentication =
@@ -83,6 +88,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 null,
                 customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         chain.doFilter(request, response);
 
 

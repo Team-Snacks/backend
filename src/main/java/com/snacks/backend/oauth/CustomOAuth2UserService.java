@@ -62,7 +62,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 
   private User saveOrUpdate(OAuthAttributes attributes){
-    User user = authRepository.findByEmail(attributes.getEmail())
+    User user = authRepository.findByEmailAndProvider(attributes.getEmail(), "google")
         .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
         .orElse(attributes.toEntity());
     return authRepository.save(user);
