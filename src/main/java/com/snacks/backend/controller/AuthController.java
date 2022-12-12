@@ -7,11 +7,14 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.snacks.backend.config.EnvConfiguration;
 import com.snacks.backend.dto.UserDto;
+import com.snacks.backend.entity.User;
 import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.redis.RedisService;
+import com.snacks.backend.repository.AuthRepository;
 import com.snacks.backend.response.ResponseService;
 import com.snacks.backend.service.AuthService;
 import java.util.Date;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,9 @@ public class AuthController {
   @Autowired
   JwtProvider jwtProvider;
 
+  @Autowired
+  AuthRepository authRepository;
+
   @PostMapping("")
   public ResponseEntity signUp(@Validated @RequestBody UserDto userDto,
       BindingResult bindingResult) {
@@ -67,8 +73,8 @@ public class AuthController {
       if (header == null || !header.startsWith(env.getProperty("token_prefix"))) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(responseService.errorResponse("JWT 토큰이 존재하지 않습니다."));
-
       }
+
       String refreshtoken = request.getHeader(env.getProperty("header_string"))
           .replace(env.getProperty("token_prefix"), "");
 
@@ -78,7 +84,24 @@ public class AuthController {
       }
 
       String provider = jwtProvider.getProvider(refreshtoken);
+      String email = jwtProvider.getEmail(refreshtoken);
 
+      if (provider == "local") {
+        Optional<User> user = authRepository.findByEmailAndProvider(email, "local");
+        Long id = user.get().getId();
+        String value = redisService.getValues(id.toString());
+        if (!value.equals(refreshtoken)) {
+          ResponseEntity.status(HttpStatus.BAD_REQUEST)
+              .body(responseService.errorResponse("refresh 토큰이 다릅니다."));
+        }
+      }
+      else {
+        String value = redisService.getValues(email);
+        if (!value.equals(refreshtoken)){
+          ResponseEntity.status(HttpStatus.BAD_REQUEST)
+              .body(responseService.errorResponse("refresh 토큰이 다릅니다."));
+        }
+      }
 
       String accessToken = jwtProvider.createToken(jwtProvider.getEmail(refreshtoken), "access", provider);
 
