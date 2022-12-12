@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .addFilter(corsConfig.corsFilter())
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), redisService, jwtProvider))
-        .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository))
+        .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository, jwtProvider))
         .authorizeRequests()
         .antMatchers("/users/**").authenticated()
         .anyRequest().permitAll().and();

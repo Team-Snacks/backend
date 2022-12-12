@@ -77,9 +77,10 @@ public class AuthController {
             .body(responseService.errorResponse("잘못된 JWT 토큰입니다."));
       }
 
+      String provider = jwtProvider.getProvider(refreshtoken);
 
 
-      String accessToken = jwtProvider.createToken(jwtProvider.getEmail(refreshtoken), "access");
+      String accessToken = jwtProvider.createToken(jwtProvider.getEmail(refreshtoken), "access", provider);
 
       response.addHeader(env.getProperty("access_token"),
           env.getProperty("token_prefix") + accessToken);
