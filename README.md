@@ -1,16 +1,16 @@
 # Snacks Backend Server
-README Ver 1.0 
+README Ver 1.1 
 ## Technology Stack
 | Component	| Technology |
 |-----------|-----------|
 | Language | Java 17 |
-| Backend | SpringBoot|
+| Backend | SpringBoot (2.7.5) |
 | Security | Token Based (Spring Security and JWT) |
 | Persistence | JPA (Using Spring Data) |
 | REST Documentation | Swagger Hub |
-| Server Build Tools | Gradle |
-| DBMS | MariaDB |
-| In Memory DB	| Redis |
+| Server Build Tools | Gradle (7.5.1) |
+| DBMS | MariaDB (10.8.3) |
+| In Memory DB	| Redis (7.0.5) |
 
 ## Directory Structure
 ```yaml
