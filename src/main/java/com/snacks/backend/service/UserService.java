@@ -91,7 +91,6 @@ public class UserService {
 
       UserWidget userWidget = userWidgetRepository.findById(userWidgetDto.getDuuid());
 
-      //updateUserWidget(userWidget);
       userWidget.update(userWidgetDto.getPos().getX(), userWidgetDto.getPos().getY(), userWidgetDto.getSize().getW(), userWidgetDto.getSize().getH(),
           userWidgetDto.getData());
     }
