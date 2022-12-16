@@ -26,7 +26,4 @@ public class Widget {
   @Column
   private String image;
 
-  @Column
-  private String data;
-
 }
