@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    HttpSecurity httpSecurity = http.csrf().disable()
+    http.csrf().disable()
         .httpBasic().disable()
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -50,16 +50,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), redisService, jwtProvider))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository))
         .authorizeRequests()
-        .antMatchers("/users/**").authenticated()
-        .anyRequest().permitAll().and();
+        .antMatchers("/users/**").authenticated();
+        /*
+        추후 인가가 필요한 API가 추가되면 이런 식으로 사용하시면 될 것 같습니다.
+        .antMatchers("/users/example1").hasRole("USER")
+        .andMatchers("/users/example2").hasRole("ADMIN")
+        .authenticated()
+        */
 
-
-    httpSecurity.oauth2Login()
+    http.oauth2Login()
         .userInfoEndpoint().userService(customOAuth2UserService)
         .and()
         .successHandler(oAuth2SuccessHandler)
         .permitAll();
-
   }
 
   @Bean
