@@ -13,6 +13,7 @@ import com.snacks.backend.response.ConstantResponse;
 import com.snacks.backend.response.ResponseService;
 import java.util.Optional;
 import java.util.Vector;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,27 +83,18 @@ public class UserService {
 
   }
 
+  @Transactional
   public ResponseEntity putUserWidget(String email, UserWidgetDto[] userWidgetDtos) {
     Optional<User> user = authRepository.findByEmail(email);
 
     for (UserWidgetDto userWidgetDto : userWidgetDtos) {
 
-      Widget widget = widgetRepository.findByName(userWidgetDto.getName());
-      UserWidget userWidget = new UserWidget();
+      UserWidget userWidget = userWidgetRepository.findById(userWidgetDto.getDuuid());
 
-      userWidget.setUser(user.get());
-      userWidget.setWidget(widget);
-      userWidget.setUserId(user.get().getId());
-      userWidget.setWidgetId(widget.getId());
-      userWidget.setTitle(widget.getName());
-      userWidget.setX(userWidgetDto.getPos().getX());
-      userWidget.setY(userWidgetDto.getPos().getY());
-      userWidget.setW(userWidgetDto.getSize().getW());
-      userWidget.setH(userWidgetDto.getSize().getH());
-      userWidget.setData(userWidgetDto.getData());
-
-      userWidgetRepository.save(userWidget);
+      userWidget.update(userWidgetDto.getPos().getX(), userWidgetDto.getPos().getY(), userWidgetDto.getSize().getW(), userWidgetDto.getSize().getH(),
+          userWidgetDto.getData());
     }
+
     return ResponseEntity.status(HttpStatus.CREATED).
         body(responseService.getCommonResponse());
   }
@@ -115,5 +107,7 @@ public class UserService {
 
     return ResponseEntity.status(HttpStatus.OK).
         body(responseService.getCommonResponse());
+  }
+
   }
 }

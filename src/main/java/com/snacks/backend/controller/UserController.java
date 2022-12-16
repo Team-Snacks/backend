@@ -49,4 +49,5 @@ public class UserController {
   public ResponseEntity deleteUserWidget(@PathVariable String email, @PathVariable String duuid) {
     return (userService.deleteUserWidget(email, duuid));
   }
+
 }
