@@ -106,4 +106,14 @@ public class UserService {
     return ResponseEntity.status(HttpStatus.CREATED).
         body(responseService.getCommonResponse());
   }
+
+  public ResponseEntity deleteUserWidget(String email, String duuid) {
+
+    Long id = Long.parseLong(duuid);
+    UserWidget userWidget = userWidgetRepository.findById(id);
+    userWidgetRepository.delete(userWidget);
+
+    return ResponseEntity.status(HttpStatus.OK).
+        body(responseService.getCommonResponse());
+  }
 }

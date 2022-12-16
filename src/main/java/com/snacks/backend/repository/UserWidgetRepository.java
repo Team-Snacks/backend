@@ -13,4 +13,7 @@ public interface UserWidgetRepository extends JpaRepository<UserWidget, UserWidg
   @Query(value = "SELECT * FROM USER_WIDGET WHERE USER_ID =?1", nativeQuery = true)
   UserWidget[] findWidgets(Long id);
 
+  @Query(value = "SELECT * FROM USER_WIDGET WHERE ID = ?1", nativeQuery = true)
+  UserWidget findById(Long id);
+
 }

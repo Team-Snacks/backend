@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,5 +43,10 @@ public class UserController {
   @PutMapping("/{email}/widgets")
   public ResponseEntity putUserWidget(@PathVariable String email, @RequestBody UserWidgetDto[] userWidgetDtos) {
     return (userService.putUserWidget(email, userWidgetDtos));
+  }
+
+  @DeleteMapping("/{email}/widgets/{duuid}")
+  public ResponseEntity deleteUserWidget(@PathVariable String email, @PathVariable String duuid) {
+    return (userService.deleteUserWidget(email, duuid));
   }
 }
