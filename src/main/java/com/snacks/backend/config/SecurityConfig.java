@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), redisService, jwtProvider))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository, jwtProvider))
         .authorizeRequests()
-        .antMatchers("/users/**").authenticated()
+       // .antMatchers("/users/**").authenticated()
         .anyRequest().permitAll().and();
 
 
