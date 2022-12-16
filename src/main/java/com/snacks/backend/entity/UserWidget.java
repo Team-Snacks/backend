@@ -59,11 +59,15 @@ public class UserWidget implements Serializable {
   private LocalDateTime updated_at;
 
 
+  public void setUserId(Long userId) {
+    user.setId(userId);
+  }
 
-  //public UserWidget(UserWidgetId userWidgetId) {
-   // this.userWidgetId = userWidgetId;
-  //}
+  public void setWidgetId(Long widgetId) {
+    widget.setId(widgetId);
+  }
 
+  
   public Long getUserId() {
     return user.getId();
   }

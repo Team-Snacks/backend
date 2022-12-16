@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,14 +39,8 @@ public class UserController {
     return (userService.getUserWidget(email));
   }
 
-  /*
-  @PatchMapping("/{email}/widgets")
-  public CommonResponse patchUserWidget(@PathVariable String email, @RequestBody UserWidgetDto[] userWidgetDtos) {
-    return (userService.patchUserWidget(email, userWidgetDtos));
+  @PutMapping("/{email}/widgets")
+  public ResponseEntity putUserWidget(@PathVariable String email, @RequestBody UserWidgetDto[] userWidgetDtos) {
+    return (userService.putUserWidget(email, userWidgetDtos));
   }
-
-  @PostMapping("/widets")
-  public CommonResponse PostWidget(@RequestBody WidgetDto[] widgetDtos) {
-    return (userService.postWidget(widgetDtos));
-  }*/
 }

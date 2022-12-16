@@ -81,4 +81,29 @@ public class UserService {
 
 
   }
+
+  public ResponseEntity putUserWidget(String email, UserWidgetDto[] userWidgetDtos) {
+    Optional<User> user = authRepository.findByEmail(email);
+
+    for (UserWidgetDto userWidgetDto : userWidgetDtos) {
+
+      Widget widget = widgetRepository.findByName(userWidgetDto.getName());
+      UserWidget userWidget = new UserWidget();
+
+      userWidget.setUser(user.get());
+      userWidget.setWidget(widget);
+      userWidget.setUserId(user.get().getId());
+      userWidget.setWidgetId(widget.getId());
+      userWidget.setTitle(widget.getName());
+      userWidget.setX(userWidgetDto.getPos().getX());
+      userWidget.setY(userWidgetDto.getPos().getY());
+      userWidget.setW(userWidgetDto.getSize().getW());
+      userWidget.setH(userWidgetDto.getSize().getH());
+      userWidget.setData(userWidgetDto.getData());
+
+      userWidgetRepository.save(userWidget);
+    }
+    return ResponseEntity.status(HttpStatus.CREATED).
+        body(responseService.getCommonResponse());
+  }
 }
