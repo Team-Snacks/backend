@@ -1,5 +1,6 @@
 package com.snacks.backend.controller;
 
+import com.snacks.backend.dto.PostUserWidgetDto;
 import com.snacks.backend.dto.UserDto;
 import com.snacks.backend.dto.UserWidgetDto;
 import com.snacks.backend.dto.WidgetDto;
@@ -48,6 +49,11 @@ public class UserController {
   @DeleteMapping("/{email}/widgets/{duuid}")
   public ResponseEntity deleteUserWidget(@PathVariable String email, @PathVariable String duuid) {
     return (userService.deleteUserWidget(email, duuid));
+  }
+
+  @PostMapping("/{email}/widgets")
+  public UserWidgetDto[] postUserWidget(@PathVariable String email, @RequestBody PostUserWidgetDto postUserWidgetDto) {
+    return (userService.postUserWidget(email, postUserWidgetDto));
   }
 
 }
