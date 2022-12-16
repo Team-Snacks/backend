@@ -41,16 +41,16 @@ public class UserWidget implements Serializable {
   private String title;
 
   @Column(name = "x", nullable = false)
-  private int x;
+  private Integer x;
 
   @Column(name = "y", nullable = false)
-  private int y;
+  private Integer y;
 
   @Column(name = "w", nullable = false)
-  private int w;
+  private Integer w;
 
   @Column(name = "h", nullable = false)
-  private int h;
+  private Integer h;
 
   @Column(name = "data")
   private String data;
@@ -76,4 +76,12 @@ public class UserWidget implements Serializable {
     return widget.getId();
   }
 
+
+  public void update(Integer x, Integer y, Integer w, Integer h, String data) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.data = data;
+  }
 }
