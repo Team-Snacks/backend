@@ -1,6 +1,7 @@
 package com.snacks.backend.service;
 
 import com.snacks.backend.dto.PosDto;
+import com.snacks.backend.dto.PostUserWidgetDto;
 import com.snacks.backend.dto.SizeDto;
 import com.snacks.backend.dto.UserWidgetDto;
 import com.snacks.backend.entity.User;
@@ -109,5 +110,26 @@ public class UserService {
         body(responseService.getCommonResponse());
   }
 
+  public UserWidgetDto[] postUserWidget(String email, PostUserWidgetDto postUserWidgetDto){
+    Optional<User> user = authRepository.findByEmail(email);
+    Widget widget = widgetRepository.findByName(postUserWidgetDto.getName());
+
+    UserWidget userWidget = new UserWidget();
+
+    userWidget.setUser(user.get());
+    userWidget.setWidget(widget);
+    userWidget.setUserId(user.get().getId());
+    userWidget.setWidgetId(widget.getId());
+    userWidget.setX(postUserWidgetDto.getPos().getX());
+    userWidget.setY(postUserWidgetDto.getPos().getY());
+    userWidget.setW(postUserWidgetDto.getSize().getW());
+    userWidget.setH(postUserWidgetDto.getSize().getH());
+    userWidget.setTitle(postUserWidgetDto.getName());
+    userWidget.setData(postUserWidgetDto.getData());
+
+    userWidgetRepository.save(userWidget);
+
+    return getUserWidget(email);
   }
 }
+
