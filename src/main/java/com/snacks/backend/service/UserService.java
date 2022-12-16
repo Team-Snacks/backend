@@ -110,16 +110,5 @@ public class UserService {
         body(responseService.getCommonResponse());
   }
 
-  @Transactional
-  public void updateUserWidget(UserWidget widget) {
-    UserWidget userWidget = userWidgetRepository.findById(widget.getId());
-
-    userWidget.setX(widget.getX());
-    userWidget.setY(widget.getY());
-    userWidget.setW(widget.getW());
-    userWidget.setH(widget.getH());
-    userWidget.setData(widget.getData());
-
-    userWidgetRepository.save(userWidget);
   }
 }
