@@ -64,6 +64,14 @@ public class UserWidget implements Serializable {
    // this.userWidgetId = userWidgetId;
   //}
 
+  public void setUserId(Long userId) {
+    user.setId(userId);
+  }
+
+  public void setWidgetId(Long widgetId) {
+    widget.setId(widgetId);
+  }
+
   public Long getUserId() {
     return user.getId();
   }
