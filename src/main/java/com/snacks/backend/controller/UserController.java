@@ -9,6 +9,8 @@ import com.snacks.backend.response.ListResponse;
 import com.snacks.backend.response.ResponseService;
 import com.snacks.backend.service.AuthService;
 import com.snacks.backend.service.UserService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,14 +33,10 @@ public class UserController {
   @Autowired
   UserService userService;
 
-  @GetMapping("/test")
-  public String test(){
-    return "/users/test fin";
-  }
 
-  @GetMapping("/{email}/widgets")
-  public UserWidgetDto[] getUserWidget(@PathVariable String email) {
-    return (userService.getUserWidget(email));
+  @GetMapping("/widgets")
+  public UserWidgetDto[] getUserWidget(HttpServletRequest request, HttpServletResponse response) {
+    return (userService.getUserWidget(request, response));
   }
 
   @PutMapping("/{email}/widgets")
@@ -52,8 +50,8 @@ public class UserController {
   }
 
   @PostMapping("/{email}/widgets")
-  public UserWidgetDto[] postUserWidget(@PathVariable String email, @RequestBody PostUserWidgetDto postUserWidgetDto) {
-    return (userService.postUserWidget(email, postUserWidgetDto));
+  public UserWidgetDto[] postUserWidget(@PathVariable String email, @RequestBody PostUserWidgetDto postUserWidgetDto, HttpServletRequest request, HttpServletResponse response) {
+    return (userService.postUserWidget(email, postUserWidgetDto, request, response));
   }
 
 }

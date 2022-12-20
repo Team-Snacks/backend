@@ -50,8 +50,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     //로그인, 리프레시 요청이라면 토큰 검사 안함
     if (servletPath.equals("/auth/login") || servletPath.equals("/auth/refresh")
-        || servletPath.equals("/auth") || servletPath.equals("/auth/google") || servletPath.equals("/users/test1@test.com/widgets")
-  || servletPath.equals("/users/test1@test.com/widgets/3") || servletPath.equals("/widgets")) {
+        || servletPath.equals("/auth") || servletPath.equals("/auth/google")
+  || servletPath.equals("/users/test1@test.com/widgets/3") ) {
       chain.doFilter(request, response);
     }
 
@@ -72,17 +72,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       try {
         String token = request.getHeader("Authorization")
             .replace("Bearer ", "");
-        System.out.println("token " + token);
 
-        //access token 검증
-        //JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("SECRET_SALT"))).build();
-        //DecodedJWT decodedJWT = jwtVerifier.verify(token);
         DecodedJWT decodedJWT = jwtProvider.getdecodedJwt(token);
 
         //authetication 객체 생성
         String email = jwtProvider.getEmail(token);
         Optional<User> user = authRepository.findByEmail(email);
         CustomUserDetails customUserDetails = new CustomUserDetails(user.get());
+
         Authentication authentication =
             new UsernamePasswordAuthenticationToken(
                 customUserDetails,
@@ -91,7 +88,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);
-
 
       } catch (TokenExpiredException expiredException) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -109,7 +105,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         ResponseService responseService = new ResponseService();
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), responseService.errorResponse("잘못된 JWT 토큰입니다."));
-
       }
     }
   }
