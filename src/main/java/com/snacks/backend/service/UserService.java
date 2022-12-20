@@ -59,8 +59,6 @@ public class UserService {
     String provider = jwtProvider.getProvider(token);
     String email = jwtProvider.getEmail(token);
 
-    System.out.println("provider " + provider + "email " + email);
-
 
     Optional<User> user = authRepository.findByEmailAndProvider(email, provider);
 

@@ -79,7 +79,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String email = jwtProvider.getEmail(token);
         Optional<User> user = authRepository.findByEmail(email);
         CustomUserDetails customUserDetails = new CustomUserDetails(user.get());
-        System.out.println("customUserDetails");
+
         Authentication authentication =
             new UsernamePasswordAuthenticationToken(
                 customUserDetails,
