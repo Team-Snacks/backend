@@ -17,7 +17,5 @@ public class WidgetController {
   WidgetService widgetService;
 
   @GetMapping("")
-  public WidgetDto[] getWidets(){
-    return widgetService.getWidgets();
-  }
+  public WidgetDto[] getWidets() { return widgetService.getWidgets(); }
 }

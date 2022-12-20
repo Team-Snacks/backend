@@ -1,5 +1,6 @@
 package com.snacks.backend.service;
 
+import com.snacks.backend.config.EnvConfiguration;
 import com.snacks.backend.dto.PosDto;
 import com.snacks.backend.dto.PostUserWidgetDto;
 import com.snacks.backend.dto.SizeDto;
@@ -7,6 +8,7 @@ import com.snacks.backend.dto.UserWidgetDto;
 import com.snacks.backend.entity.User;
 import com.snacks.backend.entity.UserWidget;
 import com.snacks.backend.entity.Widget;
+import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.repository.AuthRepository;
 import com.snacks.backend.repository.UserWidgetRepository;
 import com.snacks.backend.repository.WidgetRepository;
@@ -14,6 +16,8 @@ import com.snacks.backend.response.ConstantResponse;
 import com.snacks.backend.response.ResponseService;
 import java.util.Optional;
 import java.util.Vector;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +38,12 @@ public class UserService {
   @Autowired
   UserWidgetRepository userWidgetRepository;
 
+  @Autowired
+  EnvConfiguration env;
+
+  @Autowired
+  JwtProvider jwtProvider;
+
 
   public UserService(AuthRepository authRepository, ResponseService responseService, WidgetRepository widgetRepository, UserWidgetRepository userWidgetRepository) {
     this.authRepository = authRepository;
@@ -41,16 +51,20 @@ public class UserService {
     this.widgetRepository = widgetRepository;
     this.userWidgetRepository = userWidgetRepository;
   }
-  public UserWidgetDto[] getUserWidget(String email){
-    Optional<User> user = authRepository.findByEmail(email);
+  public UserWidgetDto[] getUserWidget(HttpServletRequest request, HttpServletResponse response){
 
-    /*if (!user.isPresent()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(responseService.errorResponse(ConstantResponse.EMAIL_NOT_FOUND));
-    }*/
+    String token = request.getHeader("Authorization")
+        .replace("Bearer ", "");
+
+    String provider = jwtProvider.getProvider(token);
+    String email = jwtProvider.getEmail(token);
+
+    System.out.println("provider " + provider + "email " + email);
+
+
+    Optional<User> user = authRepository.findByEmailAndProvider(email, provider);
+
     UserWidget[] userWidgets = userWidgetRepository.findWidgets(user.get().getId());
-
-    //if (userWidgets == null) null이면??? 어떡하지 그냥 빈칸 아닌가
 
     Vector<UserWidgetDto> vector = new Vector<>();
 
@@ -58,10 +72,6 @@ public class UserService {
       UserWidgetDto userWidgetDto = new UserWidgetDto();
       Widget widget = widgetRepository.findByWidgetId(userWidget.getWidgetId());
 
-      /*if (widget == null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(responseService.errorResponse("존재하지 않는 위젯입니다.")); //log 저기다 정리하기 하는김에 다른 파일도
-      }*/
 
       userWidgetDto.setDuuid(userWidget.getId());
       userWidgetDto.setName(widget.getName());
@@ -76,8 +86,6 @@ public class UserService {
       widgetDtos[i] = vector.get(i);
     }
 
-    //return ResponseEntity.status(HttpStatus.OK)
-    //    .body(responseService.getListResponse(widgetDtos));
     return widgetDtos;
 
 
@@ -110,7 +118,7 @@ public class UserService {
         body(responseService.getCommonResponse());
   }
 
-  public UserWidgetDto[] postUserWidget(String email, PostUserWidgetDto postUserWidgetDto){
+  public UserWidgetDto[] postUserWidget(String email, PostUserWidgetDto postUserWidgetDto, HttpServletRequest request, HttpServletResponse response){
     Optional<User> user = authRepository.findByEmail(email);
     Widget widget = widgetRepository.findByName(postUserWidgetDto.getName());
 
@@ -129,7 +137,7 @@ public class UserService {
 
     userWidgetRepository.save(userWidget);
 
-    return getUserWidget(email);
+    return getUserWidget(request, response);
   }
 }
 
