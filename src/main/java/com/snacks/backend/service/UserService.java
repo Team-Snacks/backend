@@ -116,8 +116,15 @@ public class UserService {
         body(responseService.getCommonResponse());
   }
 
-  public UserWidgetDto[] postUserWidget(String email, PostUserWidgetDto postUserWidgetDto, HttpServletRequest request, HttpServletResponse response){
-    Optional<User> user = authRepository.findByEmail(email);
+  public UserWidgetDto[] postUserWidget(PostUserWidgetDto postUserWidgetDto, HttpServletRequest request, HttpServletResponse response){
+
+    String token = request.getHeader("Authorization")
+        .replace("Bearer ", "");
+
+    String provider = jwtProvider.getProvider(token);
+    String email = jwtProvider.getEmail(token);
+
+    Optional<User> user = authRepository.findByEmailAndProvider(email, provider);
     Widget widget = widgetRepository.findByName(postUserWidgetDto.getName());
 
     UserWidget userWidget = new UserWidget();
