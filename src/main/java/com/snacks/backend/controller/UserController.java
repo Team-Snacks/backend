@@ -49,9 +49,9 @@ public class UserController {
     return (userService.deleteUserWidget(email, duuid));
   }
 
-  @PostMapping("/{email}/widgets")
-  public UserWidgetDto[] postUserWidget(@PathVariable String email, @RequestBody PostUserWidgetDto postUserWidgetDto, HttpServletRequest request, HttpServletResponse response) {
-    return (userService.postUserWidget(email, postUserWidgetDto, request, response));
+  @PostMapping("/widgets")
+  public UserWidgetDto[] postUserWidget(@RequestBody PostUserWidgetDto postUserWidgetDto, HttpServletRequest request, HttpServletResponse response) {
+    return (userService.postUserWidget(postUserWidgetDto, request, response));
   }
 
 }
