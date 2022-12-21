@@ -44,9 +44,9 @@ public class UserController {
     return (userService.putUserWidget(userWidgetDtos, request, response));
   }
 
-  @DeleteMapping("/{email}/widgets/{duuid}")
-  public ResponseEntity deleteUserWidget(@PathVariable String email, @PathVariable String duuid) {
-    return (userService.deleteUserWidget(email, duuid));
+  @DeleteMapping("/widgets/{duuid}")
+  public ResponseEntity deleteUserWidget(@PathVariable String duuid, HttpServletRequest request, HttpServletResponse response) {
+    return (userService.deleteUserWidget(duuid, request, response));
   }
 
   @PostMapping("/widgets")
