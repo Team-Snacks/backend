@@ -118,7 +118,7 @@ public class UserService {
         body(responseService.getCommonResponse());
   }
 
-  public ResponseEntity deleteUserWidget(String email, String duuid) {
+  public ResponseEntity deleteUserWidget(String duuid, HttpServletRequest request, HttpServletResponse response) {
 
     Long id = Long.parseLong(duuid);
     UserWidget userWidget = userWidgetRepository.findById(id);
