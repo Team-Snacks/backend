@@ -39,9 +39,9 @@ public class UserController {
     return (userService.getUserWidget(request, response));
   }
 
-  @PutMapping("/{email}/widgets")
-  public ResponseEntity putUserWidget(@PathVariable String email, @RequestBody UserWidgetDto[] userWidgetDtos) {
-    return (userService.putUserWidget(email, userWidgetDtos));
+  @PutMapping("/widgets")
+  public ResponseEntity putUserWidget(@RequestBody UserWidgetDto[] userWidgetDtos, HttpServletRequest request, HttpServletResponse response) {
+    return (userService.putUserWidget(userWidgetDtos, request, response));
   }
 
   @DeleteMapping("/{email}/widgets/{duuid}")

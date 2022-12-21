@@ -91,8 +91,20 @@ public class UserService {
   }
 
   @Transactional
-  public ResponseEntity putUserWidget(String email, UserWidgetDto[] userWidgetDtos) {
-    Optional<User> user = authRepository.findByEmail(email);
+  public ResponseEntity putUserWidget(UserWidgetDto[] userWidgetDtos, HttpServletRequest request, HttpServletResponse response) {
+
+
+    /*String token = request.getHeader("Authorization")
+        .replace("Bearer ", "");
+
+    String provider = jwtProvider.getProvider(token);
+    String email = jwtProvider.getEmail(token);
+
+    Optional<User> user = authRepository.findByEmailAndProvider(email, provider);
+
+    //고유 아이디인 duuid를 사용하기에 토큰을 사용해 유저를 찾을 필요가 없음
+    */
+
 
     for (UserWidgetDto userWidgetDto : userWidgetDtos) {
 
