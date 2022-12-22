@@ -67,16 +67,16 @@ public class AuthController {
 
   @GetMapping("/refresh")
   public ResponseEntity refresh(HttpServletRequest request, HttpServletResponse response) {
-    try {
-      String header = request.getHeader(env.getProperty("header_string"));
 
-      if (header == null || !header.startsWith(env.getProperty("token_prefix"))) {
+
+    try {
+      String refreshtoken = request.getHeader("Authorization")
+          .replace("Bearer ", "");
+
+      if (refreshtoken == null) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(responseService.errorResponse("JWT 토큰이 존재하지 않습니다."));
       }
-
-      String refreshtoken = request.getHeader(env.getProperty("header_string"))
-          .replace(env.getProperty("token_prefix"), "");
 
       if (jwtProvider.verifyToken(refreshtoken) == false) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
