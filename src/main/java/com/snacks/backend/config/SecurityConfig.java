@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsUtils;
 
 @Configuration
 @EnableWebSecurity()
@@ -46,11 +47,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-        .addFilter(corsConfig.corsFilter())
+        .cors().configurationSource(corsConfig.corsConfigurationSource())
+        .and()
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), redisService, jwtProvider))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), authRepository, jwtProvider))
         .authorizeRequests()
-       // .antMatchers("/users/**").authenticated()
+        .antMatchers("/users/**").authenticated()
         .anyRequest().permitAll().and();
 
 

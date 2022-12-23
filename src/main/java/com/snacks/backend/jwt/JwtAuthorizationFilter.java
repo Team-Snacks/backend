@@ -48,10 +48,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     String servletPath = request.getServletPath();
     String header = request.getHeader("Authorization");
 
+
     //로그인, 리프레시 요청이라면 토큰 검사 안함
     if (servletPath.equals("/auth/login") || servletPath.equals("/auth/refresh")
-        || servletPath.equals("/auth") || servletPath.equals("/auth/google")
-  || servletPath.equals("/users/test1@test.com/widgets/3") ) {
+        || servletPath.equals("/auth") || servletPath.equals("/auth/google") || servletPath.equals("") ) {
       chain.doFilter(request, response);
     }
 
