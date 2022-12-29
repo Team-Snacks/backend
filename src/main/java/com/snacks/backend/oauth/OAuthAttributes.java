@@ -6,7 +6,6 @@ import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 
-//V2를 위해 작성
 @Getter
 public class OAuthAttributes {
   private Map<String, Object> attributes;

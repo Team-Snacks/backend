@@ -12,7 +12,6 @@ import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.repository.AuthRepository;
 import com.snacks.backend.repository.UserWidgetRepository;
 import com.snacks.backend.repository.WidgetRepository;
-import com.snacks.backend.response.ConstantResponse;
 import com.snacks.backend.response.ResponseService;
 import java.util.Optional;
 import java.util.Vector;

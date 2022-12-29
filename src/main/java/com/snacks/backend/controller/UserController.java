@@ -1,24 +1,14 @@
 package com.snacks.backend.controller;
 
 import com.snacks.backend.dto.PostUserWidgetDto;
-import com.snacks.backend.dto.UserDto;
 import com.snacks.backend.dto.UserWidgetDto;
-import com.snacks.backend.dto.WidgetDto;
-import com.snacks.backend.response.CommonResponse;
-import com.snacks.backend.response.ListResponse;
-import com.snacks.backend.response.ResponseService;
-import com.snacks.backend.service.AuthService;
 import com.snacks.backend.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;

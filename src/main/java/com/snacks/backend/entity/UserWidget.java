@@ -3,14 +3,12 @@ package com.snacks.backend.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +18,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class UserWidget implements Serializable {
-
- // @EmbeddedId
-  //UserWidgetId userWidgetId;
 
   @Id
   @Column(name = "id")
