@@ -3,7 +3,6 @@ package com.snacks.backend.service;
 import com.snacks.backend.dto.WidgetDto;
 import com.snacks.backend.entity.Widget;
 import com.snacks.backend.repository.WidgetRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import org.springframework.beans.factory.annotation.Autowired;

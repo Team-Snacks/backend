@@ -1,7 +1,5 @@
 package com.snacks.backend.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snacks.backend.config.EnvConfiguration;
 import com.snacks.backend.dto.UserDto;
@@ -9,7 +7,6 @@ import com.snacks.backend.jwt.auth.CustomUserDetails;
 import com.snacks.backend.redis.RedisService;
 import com.snacks.backend.response.ResponseService;
 import java.io.IOException;
-import java.util.Date;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +83,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     String refreshToken = jwtProvider.createToken(customUserDetails.getUsername(), "refresh", "local");
     String accessToken = jwtProvider.createToken(customUserDetails.getUsername(), "access", "local");
 
-    //redisService.setValues(customUserDetails.getUsername(), refreshToken);
     redisService.setValues(customUserDetails.getUser().getId().toString(), refreshToken);
     response.addHeader("Authorization",
         "Bearer " + accessToken);

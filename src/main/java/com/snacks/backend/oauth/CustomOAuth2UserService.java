@@ -1,23 +1,14 @@
 package com.snacks.backend.oauth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.snacks.backend.dto.UserDto;
 import com.snacks.backend.entity.User;
-import com.snacks.backend.jwt.JwtAuthenticationFilter;
 import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.redis.RedisService;
 import com.snacks.backend.repository.AuthRepository;
-import com.snacks.backend.response.ResponseService;
-import java.io.IOException;
 import java.util.Collections;
-import java.util.Map.Entry;
-import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails.UserInfoEndpoint;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -25,7 +16,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 @Service
 @RequiredArgsConstructor
