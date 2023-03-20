@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
   @Autowired
   AuthService authService;
 
@@ -49,6 +48,12 @@ public class AuthController {
   @Autowired
   AuthRepository authRepository;
 
+  /**
+   * 회원가입을 진행
+   * @param userDto 유저 정보
+   * @param bindingResult 검증 오류를 담고있는 객체
+   * @return 상태 코드 및 메시지
+   */
   @PostMapping("")
   public ResponseEntity signUp(@Validated @RequestBody UserDto userDto,
       BindingResult bindingResult) {
@@ -60,10 +65,14 @@ public class AuthController {
   }
 
 
+  /**
+   * refresh 토큰을 재발급
+   * @param request
+   * @param response
+   * @return 상태 코드 및 메시지
+   */
   @GetMapping("/refresh")
   public ResponseEntity refresh(HttpServletRequest request, HttpServletResponse response) {
-
-
     try {
       String refreshtoken = request.getHeader("Authorization")
           .replace("Bearer ", "");
@@ -81,6 +90,7 @@ public class AuthController {
       String provider = jwtProvider.getProvider(refreshtoken);
       String email = jwtProvider.getEmail(refreshtoken);
 
+      //로컬 로그인일 경우
       if (provider.equals("local")) {
         Optional<User> user = authRepository.findByEmailAndProvider(email, "local");
         Long id = user.get().getId();
@@ -90,6 +100,7 @@ public class AuthController {
               .body(responseService.errorResponse("refresh 토큰이 다릅니다."));
         }
       }
+      //구글 로그인일 경우
       else {
         String value = redisService.getValues(email);
         if (!value.equals(refreshtoken)){

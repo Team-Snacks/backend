@@ -20,6 +20,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private final JwtProvider jwtProvider;
   private final RedisService redisService;
 
+  /**
+   * 구글 로그인 성공 시 access token, refresh 토큰 후 반환
+   * @param request        the request which caused the successful authentication
+   * @param response       the response
+   * @param authentication the <tt>Authentication</tt> object which was created during
+   *                       the authentication process.
+   * @throws IOException
+   */
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
     DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) authentication.getPrincipal();

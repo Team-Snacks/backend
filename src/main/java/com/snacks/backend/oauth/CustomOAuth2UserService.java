@@ -17,6 +17,9 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+/**
+ *
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -51,6 +54,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   }
 
 
+  /**
+   * 신규 로그인이면 추가, 이름 또는 사진이 변경되었으면 수정 후 저장
+   * @param attributes
+   * @return User 객체
+   */
   private User saveOrUpdate(OAuthAttributes attributes){
     User user = authRepository.findByEmailAndProvider(attributes.getEmail(), "google")
         .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))

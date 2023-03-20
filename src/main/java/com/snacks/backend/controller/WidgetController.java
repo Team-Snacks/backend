@@ -15,6 +15,12 @@ public class WidgetController {
   @Autowired
   WidgetService widgetService;
 
+  /**
+   * 마켓에서 사용가능한 위젯 목록 반환
+   * @return 위젯 목록
+   */
   @GetMapping("")
-  public WidgetDto[] getWidets() { return widgetService.getWidgets(); }
+  public WidgetDto[] getWidets() {
+    return widgetService.getWidgets();
+  }
 }
