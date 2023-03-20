@@ -18,6 +18,13 @@ public class JwtProvider {
   @Autowired
   RedisService redisService;
 
+  /**
+   * 토큰 생성
+   * @param subject 유저의 이메일
+   * @param type 토큰 타입(refresh, access)
+   * @param provider 로컬 로그인, 구글 로그인 구분
+   * @return 생성된 토큰
+   */
   public String createToken(String subject, String type, String provider)
   {
     String expr;
@@ -34,6 +41,11 @@ public class JwtProvider {
         .sign(Algorithm.HMAC512(env.getProperty("SECRET_SALT")));
   }
 
+  /**
+   * 토큰 검증
+   * @param token 토큰
+   * @return 검증 여부(true, false)
+   */
   public boolean verifyToken(String token)
   {
     DecodedJWT decodedJWT = getdecodedJwt(token);
@@ -46,18 +58,34 @@ public class JwtProvider {
     return true;
   }
 
+  /**
+   * decodedJwt 반환
+   * @param token 토큰
+   * @return decodedJwt
+   */
   public DecodedJWT getdecodedJwt(String token)
   {
     JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(env.getProperty("SECRET_SALT"))).build();
     return jwtVerifier.verify(token);
 
   }
+
+  /**
+   * 토큰에서 유저 이메일 반환
+   * @param token 토큰
+   * @return 유저 이메일
+   */
   public String getEmail(String token)
   {
     DecodedJWT decodedJWT = getdecodedJwt(token);
     return decodedJWT.getSubject();
   }
 
+  /**
+   * 토큰에서 provider(로컬 로그인, 구글 로그인) 반환
+   * @param token 토큰
+   * @return provider
+   */
   public String getProvider(String token)
   {
     DecodedJWT decodedJWT = getdecodedJwt(token);

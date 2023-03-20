@@ -38,6 +38,7 @@ public class AuthService {
 
     Optional<User> existedUser = authRepository.findByEmailAndProvider(user.getEmail(), "local");
 
+    //이미 회원가입한 유저인 경우
     if (existedUser.isPresent()) {
       return ResponseEntity.status(HttpStatus.CONFLICT)
           .body(responseService.errorResponse(ConstantResponse.EMAIL_EXSIST));
