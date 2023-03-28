@@ -3,6 +3,7 @@ package com.snacks.backend.controller;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.snacks.backend.config.EnvConfiguration;
 import com.snacks.backend.dto.UserDto;
+import com.snacks.backend.dto.WeatherRequestDto;
 import com.snacks.backend.entity.User;
 import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.redis.RedisService;
@@ -12,6 +13,8 @@ import com.snacks.backend.service.AuthService;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.snacks.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -120,6 +123,14 @@ public class AuthController {
           .body(responseService.errorResponse("refresh 토큰이 만료 되었습니다. 다시 로그인하세요"));
 
     }
+  }
+
+  //잠시 테스트를 위해 이주
+  @Autowired
+  UserService userService;
+  @GetMapping("widgets/weather")
+  public void weatherWidget(@RequestBody WeatherRequestDto weatherRequestDto) {
+    userService.weatherWidget(weatherRequestDto);
   }
 }
 

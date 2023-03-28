@@ -2,6 +2,8 @@ package com.snacks.backend.controller;
 
 import com.snacks.backend.dto.PostUserWidgetDto;
 import com.snacks.backend.dto.UserWidgetDto;
+import com.snacks.backend.dto.WeatherRequestDto;
+import com.snacks.backend.dto.WeatherResponseDto;
 import com.snacks.backend.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

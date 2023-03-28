@@ -1,10 +1,7 @@
 package com.snacks.backend.service;
 
 import com.snacks.backend.config.EnvConfiguration;
-import com.snacks.backend.dto.PosDto;
-import com.snacks.backend.dto.PostUserWidgetDto;
-import com.snacks.backend.dto.SizeDto;
-import com.snacks.backend.dto.UserWidgetDto;
+import com.snacks.backend.dto.*;
 import com.snacks.backend.entity.User;
 import com.snacks.backend.entity.UserWidget;
 import com.snacks.backend.entity.Widget;
@@ -13,6 +10,18 @@ import com.snacks.backend.repository.AuthRepository;
 import com.snacks.backend.repository.UserWidgetRepository;
 import com.snacks.backend.repository.WidgetRepository;
 import com.snacks.backend.response.ResponseService;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
@@ -138,6 +147,72 @@ public class UserService {
     userWidgetRepository.save(userWidget);
 
     return getUserWidget(request, response);
+  }
+
+  public void weatherWidget(WeatherRequestDto weatherRequestDto) //throws IOException
+  {
+    String serviceKey = "ia5tvugbDgT2IDf9oME4OPwXUuN252wpqS8vJi%2Bk922X37kOZ25EXBAbW6ayJKT2z0teNaVglVRbDoHXLQk1kw%3D%3D";
+
+    LocalDate now = LocalDate.now();
+    LocalTime timeNow = LocalTime.now();
+
+    /*String year = Integer.toString(now.getYear());
+    String month;
+    int monthValue = now.getMonthValue();
+    if (monthValue >= 1 && monthValue <= 9 )
+      month = "0" + monthValue;
+    else
+      month = Integer.toString(monthValue);
+    String day = Integer.toString(now.getDayOfMonth());
+
+    String base_day = year + month + day;*/
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    String base_day = now.format(formatter);
+
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
+    String base_time = now.format(timeFormatter);
+
+
+    StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst");
+    try {
+      urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
+      urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
+      urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("1000", "UTF-8")); /*한 페이지 결과 수*/
+      urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
+      urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(base_day, "UTF-8")); /*‘21년 6월 28일 발표*/
+      urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(base_time, "UTF-8")); /*06시 발표(정시단위) */
+      urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(weatherRequestDto.getX().toString(), "UTF-8")); /*예보지점의 X 좌표값*/
+      urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(weatherRequestDto.getY().toString(), "UTF-8")); /*예보지점의 Y 좌표값*/
+    } catch (UnsupportedEncodingException e) {
+      System.out.println(e);
+    }
+    try {
+      URL url = new URL(urlBuilder.toString());
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+    conn.setRequestProperty("Content-type", "application/json");
+    System.out.println("Response code: " + conn.getResponseCode());
+    BufferedReader rd;
+    if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+      rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    } else {
+      rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+    }
+    StringBuilder sb = new StringBuilder();
+    String line;
+    while ((line = rd.readLine()) != null) {
+      sb.append(line);
+    }
+    rd.close();
+    conn.disconnect();
+    System.out.println(sb.toString());
+    } catch (MalformedURLException urlException) {
+      System.out.println(urlException);
+    } catch (IOException ioException) {
+      System.out.println(ioException);
+    }
+
   }
 }
 
