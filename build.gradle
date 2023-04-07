@@ -39,9 +39,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.json:json:20200518'
 }
 
-tasks.named('test') {
+    tasks.named('test') {
     useJUnitPlatform()
 }
 

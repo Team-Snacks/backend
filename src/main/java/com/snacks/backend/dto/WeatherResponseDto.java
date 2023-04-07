@@ -7,5 +7,6 @@ import lombok.Setter;
 @Setter
 public class WeatherResponseDto {
     private String category;
-    private Integer fcstValue;
+    //private Integer fcstValue;
+    private Number fcstValue;
 }
