@@ -73,4 +73,15 @@ public class UserController {
     return (userService.postUserWidget(postUserWidgetDto, request, response));
   }
 
+
+  /**
+   * 날씨 위젯
+   * @param weatherRequestDto 조회할 지역의 x, y 좌표
+   * @return 조회할 지역의 예보 정보
+   */
+  @GetMapping("widgets/weather")
+  public WeatherResponseDto[] weatherWidget(@RequestBody WeatherRequestDto weatherRequestDto) {
+    return userService.weatherWidget(weatherRequestDto);
+  }
+
 }

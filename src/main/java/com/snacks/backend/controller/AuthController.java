@@ -127,14 +127,5 @@ public class AuthController {
 
     }
   }
-
-  //잠시 테스트를 위해 이주
-  @Autowired
-  UserService userService;
-
-  @GetMapping("widgets/weather")
-  public WeatherResponseDto[] weatherWidget(@RequestBody WeatherRequestDto weatherRequestDto) {
-    return userService.weatherWidget(weatherRequestDto);
-  }
 }
 

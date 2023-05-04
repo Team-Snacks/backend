@@ -218,9 +218,7 @@ public class UserService {
 
       JSONObject parse_item = new JSONObject(items);
       JSONArray jsonArray = parse_item.optJSONArray("item");
-      System.out.println();
-      System.out.println(jsonArray);
-      System.out.println();
+
       Vector<WeatherResponseDto> vector = new Vector<>();
       //for (int i = 0; i < jsonArray.length(); i++) {
       for (int i = 0; i < 10; i++) { //jsonArray안의 중복된 값이 너무 많이 나와, 처음 나온 값만 저장
@@ -234,12 +232,6 @@ public class UserService {
           tmp.setFcstValue(Double.parseDouble(fcstValue));
           tmp.setCategory(category);
           vector.add(tmp);
-
-          /*System.out.print(i + "번쨰 :  ");
-          System.out.print("fcstValue : " + fcstValue);
-          System.out.print("  category : " + category);
-          System.out.println();
-          */
         }
       }
 
