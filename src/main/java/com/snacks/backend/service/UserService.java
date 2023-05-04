@@ -1,10 +1,7 @@
 package com.snacks.backend.service;
 
 import com.snacks.backend.config.EnvConfiguration;
-import com.snacks.backend.dto.PosDto;
-import com.snacks.backend.dto.PostUserWidgetDto;
-import com.snacks.backend.dto.SizeDto;
-import com.snacks.backend.dto.UserWidgetDto;
+import com.snacks.backend.dto.*;
 import com.snacks.backend.entity.User;
 import com.snacks.backend.entity.UserWidget;
 import com.snacks.backend.entity.Widget;
@@ -13,11 +10,26 @@ import com.snacks.backend.repository.AuthRepository;
 import com.snacks.backend.repository.UserWidgetRepository;
 import com.snacks.backend.repository.WidgetRepository;
 import com.snacks.backend.response.ResponseService;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,6 +150,104 @@ public class UserService {
     userWidgetRepository.save(userWidget);
 
     return getUserWidget(request, response);
+  }
+
+  public WeatherResponseDto[] weatherWidget(WeatherRequestDto weatherRequestDto) //throws IOException
+  {
+    String serviceKey = env.getProperty("SERVICE_KEY");
+    LocalDateTime now = LocalDateTime.now();
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    String base_day = now.format(formatter);
+
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmm");
+    String base_time = now.format(timeFormatter);
+
+
+    StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst");
+    try {
+      urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
+      urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
+      urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("1000", "UTF-8")); /*한 페이지 결과 수*/
+      urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
+      urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(base_day, "UTF-8")); /*날짜*/
+      urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(base_time, "UTF-8")); /*시간*/
+      urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(weatherRequestDto.getX().toString(), "UTF-8")); /*예보지점의 X 좌표값*/
+      urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(weatherRequestDto.getY().toString(), "UTF-8")); /*예보지점의 Y 좌표값*/
+    } catch (UnsupportedEncodingException e) {
+      System.out.println(e);
+    }
+    try {
+      URL url = new URL(urlBuilder.toString());
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+    conn.setRequestProperty("Content-type", "application/json");
+
+    BufferedReader rd;
+    if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+      rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    } else {
+      rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+    }
+    StringBuilder sb = new StringBuilder();
+    String line;
+    while ((line = rd.readLine()) != null) {
+      sb.append(line);
+    }
+    rd.close();
+    conn.disconnect();
+    String result = sb.toString();
+
+
+    JSONObject parse_response = new JSONObject(result);
+    String response = parse_response.optString("response");
+
+    JSONObject parse_header = new JSONObject(response);
+    String header = parse_header.optString("header");
+
+    JSONObject parse_code = new JSONObject(header);
+    String code = parse_code.optString("resultCode");
+
+    if (code.equals("00")) {
+
+      JSONObject parse_body = new JSONObject(response);
+      String body = parse_body.optString("body");
+
+      JSONObject parse_itmes = new JSONObject(body);
+      String items = parse_itmes.optString("items");
+
+      JSONObject parse_item = new JSONObject(items);
+      JSONArray jsonArray = parse_item.optJSONArray("item");
+
+      Vector<WeatherResponseDto> vector = new Vector<>();
+      //for (int i = 0; i < jsonArray.length(); i++) {
+      for (int i = 0; i < 10; i++) { //jsonArray안의 중복된 값이 너무 많이 나와, 처음 나온 값만 저장
+        parse_item = jsonArray.getJSONObject(i);
+        String fcstValue = parse_item.optString("fcstValue");
+        String category = parse_item.optString("category");
+
+        if (category.equals("POP") || category.equals("PTY") || category.equals("SKY") || category.equals("TMP") || category.equals("TMN") || category.equals("TMX"))
+        {
+          WeatherResponseDto tmp = new WeatherResponseDto();
+          tmp.setFcstValue(Double.parseDouble(fcstValue));
+          tmp.setCategory(category);
+          vector.add(tmp);
+        }
+      }
+
+      WeatherResponseDto[] weatherResponseDtos = new WeatherResponseDto[vector.size()];
+      for (int i = 0; i < vector.size(); i++)
+        weatherResponseDtos[i] = vector.get(i);
+
+      return weatherResponseDtos;
+    }
+    } catch (MalformedURLException urlException) {
+      System.out.println(urlException);
+    } catch (IOException ioException) {
+      System.out.println(ioException);
+    }
+    WeatherResponseDto[] notweatherResponseDtos = new WeatherResponseDto[0];
+    return notweatherResponseDtos;
   }
 }
 

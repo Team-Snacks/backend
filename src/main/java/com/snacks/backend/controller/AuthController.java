@@ -3,6 +3,8 @@ package com.snacks.backend.controller;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.snacks.backend.config.EnvConfiguration;
 import com.snacks.backend.dto.UserDto;
+import com.snacks.backend.dto.WeatherRequestDto;
+import com.snacks.backend.dto.WeatherResponseDto;
 import com.snacks.backend.entity.User;
 import com.snacks.backend.jwt.JwtProvider;
 import com.snacks.backend.redis.RedisService;
@@ -12,6 +14,8 @@ import com.snacks.backend.service.AuthService;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.snacks.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,16 +54,17 @@ public class AuthController {
 
   /**
    * 회원가입을 진행
-   * @param userDto 유저 정보
+   *
+   * @param userDto       유저 정보
    * @param bindingResult 검증 오류를 담고있는 객체
    * @return 상태 코드 및 메시지
    */
   @PostMapping("")
   public ResponseEntity signUp(@Validated @RequestBody UserDto userDto,
-      BindingResult bindingResult) {
+                               BindingResult bindingResult) {
     if (bindingResult.hasErrors()) {
       return ResponseEntity.badRequest()
-          .body(responseService.errorResponse(bindingResult.getFieldError().getDefaultMessage()));
+              .body(responseService.errorResponse(bindingResult.getFieldError().getDefaultMessage()));
     }
     return authService.signUp(userDto);
   }
@@ -67,6 +72,7 @@ public class AuthController {
 
   /**
    * refresh 토큰을 재발급
+   *
    * @param request
    * @param response
    * @return 상태 코드 및 메시지
@@ -75,16 +81,16 @@ public class AuthController {
   public ResponseEntity refresh(HttpServletRequest request, HttpServletResponse response) {
     try {
       String refreshtoken = request.getHeader("Authorization")
-          .replace("Bearer ", "");
+              .replace("Bearer ", "");
 
       if (refreshtoken == null) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(responseService.errorResponse("JWT 토큰이 존재하지 않습니다."));
+                .body(responseService.errorResponse("JWT 토큰이 존재하지 않습니다."));
       }
 
       if (jwtProvider.verifyToken(refreshtoken) == false) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(responseService.errorResponse("잘못된 JWT 토큰입니다."));
+                .body(responseService.errorResponse("잘못된 JWT 토큰입니다."));
       }
 
       String provider = jwtProvider.getProvider(refreshtoken);
@@ -97,27 +103,27 @@ public class AuthController {
         String value = redisService.getValues(id.toString());
         if (!value.equals(refreshtoken)) {
           ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(responseService.errorResponse("refresh 토큰이 다릅니다."));
+                  .body(responseService.errorResponse("refresh 토큰이 다릅니다."));
         }
       }
       //구글 로그인일 경우
       else {
         String value = redisService.getValues(email);
-        if (!value.equals(refreshtoken)){
+        if (!value.equals(refreshtoken)) {
           ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(responseService.errorResponse("refresh 토큰이 다릅니다."));
+                  .body(responseService.errorResponse("refresh 토큰이 다릅니다."));
         }
       }
 
       String accessToken = jwtProvider.createToken(jwtProvider.getEmail(refreshtoken), "access", provider);
 
       response.addHeader(env.getProperty("access_token"),
-          env.getProperty("token_prefix") + accessToken);
+              env.getProperty("token_prefix") + accessToken);
       return ResponseEntity.status(HttpStatus.OK).
-          body(responseService.getCommonResponse());
+              body(responseService.getCommonResponse());
     } catch (TokenExpiredException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(responseService.errorResponse("refresh 토큰이 만료 되었습니다. 다시 로그인하세요"));
+              .body(responseService.errorResponse("refresh 토큰이 만료 되었습니다. 다시 로그인하세요"));
 
     }
   }

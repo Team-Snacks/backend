@@ -2,6 +2,8 @@ package com.snacks.backend.controller;
 
 import com.snacks.backend.dto.PostUserWidgetDto;
 import com.snacks.backend.dto.UserWidgetDto;
+import com.snacks.backend.dto.WeatherRequestDto;
+import com.snacks.backend.dto.WeatherResponseDto;
 import com.snacks.backend.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +71,17 @@ public class UserController {
   @PostMapping("/widgets")
   public UserWidgetDto[] postUserWidget(@RequestBody PostUserWidgetDto postUserWidgetDto, HttpServletRequest request, HttpServletResponse response) {
     return (userService.postUserWidget(postUserWidgetDto, request, response));
+  }
+
+
+  /**
+   * 날씨 위젯
+   * @param weatherRequestDto 조회할 지역의 x, y 좌표
+   * @return 조회할 지역의 예보 정보
+   */
+  @GetMapping("widgets/weather")
+  public WeatherResponseDto[] weatherWidget(@RequestBody WeatherRequestDto weatherRequestDto) {
+    return userService.weatherWidget(weatherRequestDto);
   }
 
 }
