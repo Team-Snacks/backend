@@ -152,7 +152,7 @@ public class UserService {
     return getUserWidget(request, response);
   }
 
-  public void weatherWidget(WeatherRequestDto weatherRequestDto) //throws IOException
+  public WeatherResponseDto[] weatherWidget(WeatherRequestDto weatherRequestDto) //throws IOException
   {
     String serviceKey = env.getProperty("SERVICE_KEY");
     LocalDateTime now = LocalDateTime.now();
@@ -198,63 +198,64 @@ public class UserService {
     conn.disconnect();
     String result = sb.toString();
 
-    System.out.println(result);
 
+    JSONObject parse_response = new JSONObject(result);
+    String response = parse_response.optString("response");
 
-      JSONObject parse_response = new JSONObject(result);
-      String response = parse_response.optString("response");
+    JSONObject parse_header = new JSONObject(response);
+    String header = parse_header.optString("header");
 
-      JSONObject parse_header = new JSONObject(response);
-      String header = parse_header.optString("header");
+    JSONObject parse_code = new JSONObject(header);
+    String code = parse_code.optString("resultCode");
 
-      JSONObject parse_code = new JSONObject(header);
-      String code = parse_code.optString("resultCode");
+    if (code.equals("00")) {
 
-      if (code.equals("00")) {
+      JSONObject parse_body = new JSONObject(response);
+      String body = parse_body.optString("body");
 
-        JSONObject parse_body = new JSONObject(response);
-        String body = parse_body.optString("body");
+      JSONObject parse_itmes = new JSONObject(body);
+      String items = parse_itmes.optString("items");
 
-        JSONObject parse_itmes = new JSONObject(body);
-        String items = parse_itmes.optString("items");
+      JSONObject parse_item = new JSONObject(items);
+      JSONArray jsonArray = parse_item.optJSONArray("item");
+      System.out.println();
+      System.out.println(jsonArray);
+      System.out.println();
+      Vector<WeatherResponseDto> vector = new Vector<>();
+      //for (int i = 0; i < jsonArray.length(); i++) {
+      for (int i = 0; i < 10; i++) { //jsonArray안의 중복된 값이 너무 많이 나와, 처음 나온 값만 저장
+        parse_item = jsonArray.getJSONObject(i);
+        String fcstValue = parse_item.optString("fcstValue");
+        String category = parse_item.optString("category");
 
-        JSONObject parse_item = new JSONObject(items);
-        JSONArray jsonArray = parse_item.optJSONArray("item");
+        if (category.equals("POP") || category.equals("PTY") || category.equals("SKY") || category.equals("TMP") || category.equals("TMN") || category.equals("TMX"))
+        {
+          WeatherResponseDto tmp = new WeatherResponseDto();
+          tmp.setFcstValue(Double.parseDouble(fcstValue));
+          tmp.setCategory(category);
+          vector.add(tmp);
 
-        Vector<WeatherResponseDto> vector = new Vector<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-          parse_item = jsonArray.getJSONObject(i);
-          String fcstValue = parse_item.optString("fcstValue");
-          String category = parse_item.optString("category");
-
-          if (category.equals("POP") || category.equals("PTY") || category.equals("SKY") ||
-              category.equals("TMP") || category.equals("TMN") || category.equals("TMX"))
-          {
-            WeatherResponseDto tmp = new WeatherResponseDto();
-            tmp.setFcstValue(Double.parseDouble(fcstValue));
-            tmp.setCategory(category);
-            vector.add(tmp);
-
-            System.out.print(i + "번쨰 :  ");
-            System.out.print("fcstValue : " + fcstValue);
-            System.out.print("  category : " + category);
-            System.out.println();
-
-          }
+          /*System.out.print(i + "번쨰 :  ");
+          System.out.print("fcstValue : " + fcstValue);
+          System.out.print("  category : " + category);
+          System.out.println();
+          */
         }
-
-        WeatherResponseDto[] weatherResponseDtos = new WeatherResponseDto[vector.size()];
-        for (int i = 0; i < vector.size(); i++)
-          weatherResponseDtos[i] = vector.get(i);
-
-        //return weatherResponseDtos; 반환값 나중에 추가
       }
+
+      WeatherResponseDto[] weatherResponseDtos = new WeatherResponseDto[vector.size()];
+      for (int i = 0; i < vector.size(); i++)
+        weatherResponseDtos[i] = vector.get(i);
+
+      return weatherResponseDtos;
+    }
     } catch (MalformedURLException urlException) {
       System.out.println(urlException);
     } catch (IOException ioException) {
       System.out.println(ioException);
     }
-
+    WeatherResponseDto[] notweatherResponseDtos = new WeatherResponseDto[0];
+    return notweatherResponseDtos;
   }
 }
 
